@@ -1,0 +1,85 @@
+# CLAUDE.md
+
+Project context for Claude Code. This is a personal portfolio site for Paing Htet Aung,
+a Frontend Developer. The site is itself a showcase of frontend craft — animation and
+interaction are the point, not decoration.
+
+## Stack
+
+- **React 18** + **Vite** (plain JS/JSX, no TypeScript)
+- **Framer Motion** — all reveals, scroll-linked animation, magnetic & tilt interactions
+- **Lenis** — smooth inertia scrolling (`src/hooks/useLenis.js`)
+- **Canvas 2D** — interactive particle field in the hero (`src/components/AuroraCanvas.jsx`)
+- No CSS framework — hand-written CSS with custom properties (design tokens) in `src/styles/`
+
+## Commands
+
+```bash
+npm install       # install deps
+npm run dev       # dev server (http://localhost:5173)
+npm run build     # production build -> dist/
+npm run preview   # preview the production build
+```
+
+There are no tests or linter configured. "Verify it works" = `npm run build` succeeds
+and the dev server renders without console errors.
+
+## Where things live
+
+```
+src/
+  data/resume.js        <- SINGLE SOURCE OF TRUTH for all content.
+                           Edit profile, skills, experience, projects, education HERE.
+                           Do not hardcode resume content inside components.
+  sections/             <- one file per page section, composed in App.jsx in order:
+      Hero, About, Skills, Experience, Projects, Contact
+  components/            <- reusable UI + interaction primitives:
+      Cursor.jsx         magnetic custom cursor (dot + spring-lagged ring)
+      Magnetic.jsx       wraps children so they pull toward the pointer on hover
+      Reveal.jsx         fade/slide-in on scroll (whileInView, triggers once)
+      AnimatedText.jsx   splits a string into words and reveals them with a mask-up
+      Navbar.jsx         fixed nav + top scroll-progress bar
+      AuroraCanvas.jsx   the hero particle constellation
+  hooks/useLenis.js     smooth scroll + in-page anchor handling
+  styles/
+      index.css         global reset, design tokens (:root vars), fonts, base
+      app.css           all section/component styling (large file, organized by section)
+```
+
+## Conventions
+
+- **Content changes go in `src/data/resume.js`.** Components read from it.
+- **Design tokens** are CSS custom properties in `src/styles/index.css` `:root`
+  (`--accent`, `--bg`, `--text`, etc). Change the palette there, not per-component.
+- **Accent color** is `--accent` (#7c6cff purple); secondary accents `--accent-2` (blue),
+  `--accent-3` (green). The `.grad-text` class applies the signature gradient to text.
+- **Fonts:** Space Grotesk (display/headings, `--font-display`), Inter (body).
+- **Interactive elements** get `data-cursor="hover"` so the custom cursor reacts to them.
+- **Animation easing:** the house curve is `[0.22, 1, 0.36, 1]` (ease-out expo-ish).
+  Reuse it for consistency.
+- **Accessibility:** everything must respect `prefers-reduced-motion` (Lenis, the canvas,
+  and CSS transitions already gate on it). The custom cursor only enables on
+  fine-pointer devices. Keep these guards when adding motion.
+
+## Common tasks
+
+- **Add/edit a job:** edit the `experience` array in `src/data/resume.js`. The timeline
+  renders automatically; `mode: 'Current'` gives the "Now" badge + highlighted card.
+- **Add a project:** add an object to `projects` in `resume.js` (give it an `accent` hex —
+  it colors the card's glare and bar).
+- **Change skills:** edit the `skills` array (grouped) and the `marquee` list in
+  `src/sections/Skills.jsx` if you want different words scrolling.
+- **Update links (GitHub/LinkedIn/email):** `profile.socials` and `profile.email` in `resume.js`.
+- **Add a new section:** create `src/sections/Foo.jsx`, style it in `app.css`, and add it to
+  `App.jsx`. Use `<Reveal>` for scroll-in and add an `id` if it needs a nav link (add the
+  link to the `links` array in `Navbar.jsx`).
+
+## Deployment
+
+Static Vite build. `npm run build` -> `dist/`. Deploy `dist/` to Netlify or Vercel
+(both are already installed on the repo). No server needed. For SPA hosting no rewrites
+are required since it's a single page.
+
+## Git
+
+Work is on branch `claude/session-6s3awe`. Default branch is `main` (empty until merged).
