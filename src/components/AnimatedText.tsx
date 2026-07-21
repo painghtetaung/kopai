@@ -1,19 +1,31 @@
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
+
+interface AnimatedTextProps {
+  text: string
+  className?: string
+  delay?: number
+  stagger?: number
+}
 
 /**
  * Splits a string into words and reveals each one with a mask-up motion.
  * Uses a stagger so the line "unfolds" line-by-line, word-by-word.
  */
-export default function AnimatedText({ text, className, delay = 0, stagger = 0.045 }) {
+export default function AnimatedText({
+  text,
+  className,
+  delay = 0,
+  stagger = 0.045,
+}: AnimatedTextProps) {
   const words = text.split(' ')
 
-  const container = {
+  const container: Variants = {
     hidden: {},
     visible: {
       transition: { staggerChildren: stagger, delayChildren: delay },
     },
   }
-  const word = {
+  const word: Variants = {
     hidden: { y: '110%' },
     visible: {
       y: '0%',

@@ -23,18 +23,20 @@ export default function Cursor() {
     if (!fine) return
     setEnabled(true)
 
-    const move = (e) => {
+    const move = (e: MouseEvent) => {
       x.set(e.clientX)
       y.set(e.clientY)
       if (hidden) setHidden(false)
     }
-    const over = (e) => {
-      if (e.target.closest('a, button, [data-cursor="hover"]')) {
+    const over = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (target.closest('a, button, [data-cursor="hover"]')) {
         setHovering(true)
       }
     }
-    const out = (e) => {
-      if (e.target.closest('a, button, [data-cursor="hover"]')) {
+    const out = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (target.closest('a, button, [data-cursor="hover"]')) {
         setHovering(false)
       }
     }

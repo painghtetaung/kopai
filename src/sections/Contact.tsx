@@ -68,15 +68,8 @@ export default function Contact() {
       <footer className="footer">
         <div className="container footer__inner">
           <span>© {new Date().getFullYear()} {profile.name}</span>
-          <span className="footer__built">
-            Built with React & Framer Motion
-          </span>
-          <motion.a
-            href="#top"
-            className="footer__top"
-            data-cursor="hover"
-            whileHover={{ y: -4 }}
-          >
+          <span className="footer__built">Built with React & Framer Motion</span>
+          <motion.a href="#top" className="footer__top" data-cursor="hover" whileHover={{ y: -4 }}>
             Back to top ↑
           </motion.a>
         </div>

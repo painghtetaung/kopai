@@ -1,4 +1,7 @@
 import { useEffect, useRef } from 'react'
+import type { GameInput, InputRef } from './types'
+
+type Direction = keyof GameInput
 
 /**
  * Shared directional input. Returns a ref whose `.current` holds
@@ -9,17 +12,16 @@ import { useEffect, useRef } from 'react'
  * `active` gates the keyboard listeners so the game only captures keys while
  * it is open, and prevents the page from scrolling on arrow keys during play.
  */
-export default function useGameInput(active) {
-  const input = useRef({ left: false, right: false, up: false, down: false })
+export default function useGameInput(active: string | null): InputRef {
+  const input = useRef<GameInput>({ left: false, right: false, up: false, down: false })
 
   useEffect(() => {
     if (!active) {
-      // reset when leaving a game
       input.current = { left: false, right: false, up: false, down: false }
       return
     }
 
-    const map = (code) => {
+    const map = (code: string): Direction | null => {
       switch (code) {
         case 'ArrowLeft':
         case 'KeyA':
@@ -38,14 +40,14 @@ export default function useGameInput(active) {
       }
     }
 
-    const down = (e) => {
+    const down = (e: KeyboardEvent) => {
       const dir = map(e.code)
       if (dir) {
         input.current[dir] = true
         e.preventDefault()
       }
     }
-    const up = (e) => {
+    const up = (e: KeyboardEvent) => {
       const dir = map(e.code)
       if (dir) {
         input.current[dir] = false

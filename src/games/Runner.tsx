@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { PerspectiveCamera } from '@react-three/drei'
 import * as THREE from 'three'
+import type { InputRef, HudSetter } from './types'
 
 const TRACK = 4.6 // half-width the ship can travel
 const SHIP_Z = 3.4 // ship sits here; obstacles travel toward +z (camera)
@@ -10,14 +11,27 @@ const DEPTH = 90 // how far ahead obstacles are recycled
 
 const COLORS = ['#7c6cff', '#4fc3ff', '#3ddc97', '#ff7a59']
 
-export default function Runner({ input, onHud }) {
-  const shipRef = useRef()
-  const shipLight = useRef()
-  const groupRef = useRef()
-  const barsRef = useRef()
+interface Obstacle {
+  x: number
+  z: number
+  c: string
+}
+interface RunnerState {
+  x: number
+  speed: number
+  score: number
+  best: number
+  dead: boolean
+  hudAcc: number
+}
 
-  // mutable game state kept out of React to avoid per-frame re-renders
-  const state = useRef({
+export default function Runner({ input, onHud }: { input: InputRef; onHud: HudSetter }) {
+  const shipRef = useRef<THREE.Group>(null)
+  const shipLight = useRef<THREE.PointLight>(null)
+  const obstacleRefs = useRef<(THREE.Mesh | null)[]>([])
+  const barRefs = useRef<(THREE.Mesh | null)[]>([])
+
+  const state = useRef<RunnerState>({
     x: 0,
     speed: 14,
     score: 0,
@@ -26,8 +40,7 @@ export default function Runner({ input, onHud }) {
     hudAcc: 0,
   })
 
-  // obstacle pool
-  const obstacles = useMemo(
+  const obstacles = useMemo<Obstacle[]>(
     () =>
       Array.from({ length: POOL }, (_, i) => ({
         x: (Math.random() * 2 - 1) * TRACK,
@@ -36,14 +49,11 @@ export default function Runner({ input, onHud }) {
       })),
     []
   )
-  const obstacleRefs = useRef([])
 
-  // moving ground bars to convey speed
   const bars = useMemo(
     () => Array.from({ length: 26 }, (_, i) => ({ z: -(i / 26) * DEPTH })),
     []
   )
-  const barRefs = useRef([])
 
   useFrame((_, rawDt) => {
     const s = state.current
@@ -60,12 +70,7 @@ export default function Runner({ input, onHud }) {
 
     if (shipRef.current) {
       shipRef.current.position.x = s.x
-      // bank into the turn
-      shipRef.current.rotation.z = THREE.MathUtils.lerp(
-        shipRef.current.rotation.z,
-        -dir * 0.5,
-        0.15
-      )
+      shipRef.current.rotation.z = THREE.MathUtils.lerp(shipRef.current.rotation.z, -dir * 0.5, 0.15)
       shipRef.current.position.y = 0.35 + Math.sin(performance.now() * 0.005) * 0.06
     }
     if (shipLight.current) shipLight.current.position.x = s.x
@@ -83,7 +88,6 @@ export default function Runner({ input, onHud }) {
         m.position.set(o.x, 0.45, o.z)
         m.rotation.y += dt * 1.5
       }
-      // collide when in the ship's z-slab
       if (Math.abs(o.z - SHIP_Z) < 0.8 && Math.abs(o.x - s.x) < 0.95) {
         s.dead = true
         s.best = Math.max(s.best, Math.floor(s.score))
@@ -134,31 +138,27 @@ export default function Runner({ input, onHud }) {
       ))}
 
       {/* Moving ground bars */}
-      <group ref={barsRef}>
-        {bars.map((b, i) => (
-          <mesh key={i} ref={(el) => (barRefs.current[i] = el)} position={[0, 0.02, b.z]}>
-            <boxGeometry args={[TRACK * 2 + 1.4, 0.02, 0.08]} />
-            <meshStandardMaterial color="#20204a" emissive="#20204a" emissiveIntensity={0.6} />
-          </mesh>
-        ))}
-      </group>
+      {bars.map((b, i) => (
+        <mesh key={i} ref={(el) => { barRefs.current[i] = el }} position={[0, 0.02, b.z]}>
+          <boxGeometry args={[TRACK * 2 + 1.4, 0.02, 0.08]} />
+          <meshStandardMaterial color="#20204a" emissive="#20204a" emissiveIntensity={0.6} />
+        </mesh>
+      ))}
 
       {/* Obstacles */}
-      <group ref={groupRef}>
-        {obstacles.map((o, i) => (
-          <mesh key={i} ref={(el) => (obstacleRefs.current[i] = el)} position={[o.x, 0.45, o.z]}>
-            <boxGeometry args={[0.9, 0.9, 0.9]} />
-            <meshStandardMaterial
-              color={o.c}
-              emissive={o.c}
-              emissiveIntensity={1.6}
-              metalness={0.3}
-              roughness={0.2}
-              toneMapped={false}
-            />
-          </mesh>
-        ))}
-      </group>
+      {obstacles.map((o, i) => (
+        <mesh key={i} ref={(el) => { obstacleRefs.current[i] = el }} position={[o.x, 0.45, o.z]}>
+          <boxGeometry args={[0.9, 0.9, 0.9]} />
+          <meshStandardMaterial
+            color={o.c}
+            emissive={o.c}
+            emissiveIntensity={1.6}
+            metalness={0.3}
+            roughness={0.2}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
 
       {/* Ship */}
       <group ref={shipRef} position={[0, 0.35, SHIP_Z]}>

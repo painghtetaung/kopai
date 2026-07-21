@@ -3,7 +3,12 @@ import { motion, useScroll, useSpring } from 'framer-motion'
 import Magnetic from './Magnetic'
 import { profile } from '../data/resume'
 
-const links = [
+interface NavLink {
+  label: string
+  href: string
+}
+
+const links: NavLink[] = [
   { label: 'About', href: '#about' },
   { label: 'Skills', href: '#skills' },
   { label: 'Work', href: '#work' },

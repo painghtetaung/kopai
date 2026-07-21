@@ -1,10 +1,19 @@
 import { motion } from 'framer-motion'
+import type { ComponentType, ReactNode } from 'react'
+
+interface RevealProps {
+  children: ReactNode
+  delay?: number
+  y?: number
+  as?: 'div' | 'li' | 'span' | 'p'
+  className?: string
+}
 
 /**
  * Fade + slide reveal that triggers once when scrolled into view.
  */
-export default function Reveal({ children, delay = 0, y = 28, as = 'div', ...rest }) {
-  const MotionTag = motion[as] || motion.div
+export default function Reveal({ children, delay = 0, y = 28, as = 'div', ...rest }: RevealProps) {
+  const MotionTag = motion[as] as ComponentType<Record<string, unknown>>
   return (
     <MotionTag
       initial={{ opacity: 0, y }}

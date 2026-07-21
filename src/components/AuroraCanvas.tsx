@@ -1,25 +1,37 @@
 import { useEffect, useRef } from 'react'
 
+interface Particle {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  r: number
+  c: string
+}
+
 /**
  * A lightweight interactive particle constellation. Points drift slowly,
  * connect with lines when near, and are gently repelled by the pointer.
  * Rendered on a canvas and sized to its parent. Pauses when off-screen.
  */
 export default function AuroraCanvas() {
-  const canvasRef = useRef(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const canvas = canvasRef.current
+    if (!canvas) return
     const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
     let width = 0
     let height = 0
-    let dpr = Math.min(window.devicePixelRatio || 1, 2)
-    let raf
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    let raf = 0
     let running = true
 
     const mouse = { x: -9999, y: -9999 }
-    let particles = []
+    let particles: Particle[] = []
 
     const colors = ['124,108,255', '79,195,255', '61,220,151']
 
@@ -97,7 +109,7 @@ export default function AuroraCanvas() {
       raf = requestAnimationFrame(step)
     }
 
-    const onMove = (e) => {
+    const onMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
       mouse.x = e.clientX - rect.left
       mouse.y = e.clientY - rect.top

@@ -1,10 +1,10 @@
 import { useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import Reveal from '../components/Reveal'
-import { projects } from '../data/resume'
+import { projects, type Project } from '../data/resume'
 
-function TiltCard({ project, index }) {
-  const ref = useRef(null)
+function TiltCard({ project, index }: { project: Project; index: number }) {
+  const ref = useRef<HTMLElement>(null)
   const mx = useMotionValue(0.5)
   const my = useMotionValue(0.5)
 
@@ -12,8 +12,14 @@ function TiltCard({ project, index }) {
   const rotateY = useSpring(useTransform(mx, [0, 1], [-8, 8]), { stiffness: 200, damping: 20 })
   const glareX = useTransform(mx, [0, 1], ['0%', '100%'])
   const glareY = useTransform(my, [0, 1], ['0%', '100%'])
+  const glare = useTransform(
+    [glareX, glareY],
+    ([x, y]: string[]) =>
+      `radial-gradient(circle at ${x} ${y}, ${project.accent}33, transparent 55%)`
+  )
 
-  const onMove = (e) => {
+  const onMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (!ref.current) return
     const rect = ref.current.getBoundingClientRect()
     mx.set((e.clientX - rect.left) / rect.width)
     my.set((e.clientY - rect.top) / rect.height)
@@ -33,16 +39,7 @@ function TiltCard({ project, index }) {
         onMouseLeave={onLeave}
         style={{ rotateX, rotateY, transformPerspective: 900 }}
       >
-        <motion.div
-          className="project-card__glare"
-          style={{
-            background: useTransform(
-              [glareX, glareY],
-              ([x, y]) =>
-                `radial-gradient(circle at ${x} ${y}, ${project.accent}33, transparent 55%)`
-            ),
-          }}
-        />
+        <motion.div className="project-card__glare" style={{ background: glare }} />
         <div className="project-card__num" style={{ color: project.accent }}>
           0{index + 1}
         </div>

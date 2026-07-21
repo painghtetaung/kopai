@@ -1,7 +1,52 @@
 // Single source of truth for all portfolio content.
 // Edit values here to update the site.
 
-export const profile = {
+export interface Social {
+  label: string
+  href: string
+}
+
+export interface Profile {
+  name: string
+  role: string
+  tagline: string
+  location: string
+  email: string
+  phone: string
+  yearsExperience: string
+  summary: string
+  socials: Social[]
+}
+
+export interface SkillGroup {
+  group: string
+  items: string[]
+}
+
+export interface Job {
+  company: string
+  role: string
+  period: string
+  mode: string
+  url?: string
+  summary: string
+  points: string[]
+}
+
+export interface Project {
+  title: string
+  tag: string
+  description: string
+  accent: string
+}
+
+export interface Education {
+  school: string
+  detail: string
+  period: string
+}
+
+export const profile: Profile = {
   name: 'Paing Htet Aung',
   role: 'Frontend Developer',
   tagline:
@@ -19,7 +64,7 @@ export const profile = {
   ],
 }
 
-export const skills = [
+export const skills: SkillGroup[] = [
   {
     group: 'Front-End',
     items: ['JavaScript', 'TypeScript', 'React', 'Redux', 'Next.js', 'Vue.js', 'jQuery', 'HTML5', 'CSS3'],
@@ -38,7 +83,7 @@ export const skills = [
   },
 ]
 
-export const experience = [
+export const experience: Job[] = [
   {
     company: 'Rezerv',
     role: 'Frontend Developer',
@@ -107,7 +152,7 @@ export const experience = [
   },
 ]
 
-export const projects = [
+export const projects: Project[] = [
   {
     title: 'Rezerv Booking Platform',
     tag: 'React · TypeScript',
@@ -138,7 +183,7 @@ export const projects = [
   },
 ]
 
-export const education = [
+export const education: Education[] = [
   {
     school: 'Yangon University of Distance Education',
     detail: 'Final Year — Business Management (Management Accounting, International Finance)',

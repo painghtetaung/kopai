@@ -1,18 +1,24 @@
-import { useRef } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
+
+interface MagneticProps {
+  children: ReactNode
+  strength?: number
+  className?: string
+}
 
 /**
  * Wraps children so they are gently pulled toward the pointer while hovered,
  * then spring back on leave. Great for buttons and icons.
  */
-export default function Magnetic({ children, strength = 0.35, className, ...rest }) {
-  const ref = useRef(null)
+export default function Magnetic({ children, strength = 0.35, className, ...rest }: MagneticProps) {
+  const ref = useRef<HTMLDivElement>(null)
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const sx = useSpring(x, { stiffness: 220, damping: 18, mass: 0.4 })
   const sy = useSpring(y, { stiffness: 220, damping: 18, mass: 0.4 })
 
-  const onMove = (e) => {
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = ref.current
     if (!el) return
     const rect = el.getBoundingClientRect()

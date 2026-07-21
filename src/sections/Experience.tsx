@@ -1,9 +1,9 @@
 import { useRef } from 'react'
 import { motion, useScroll, useSpring } from 'framer-motion'
 import Reveal from '../components/Reveal'
-import { experience } from '../data/resume'
+import { experience, type Job } from '../data/resume'
 
-function TimelineItem({ item, index }) {
+function TimelineItem({ item }: { item: Job }) {
   const isCurrent = item.mode === 'Current'
   return (
     <motion.div
@@ -48,7 +48,7 @@ function TimelineItem({ item, index }) {
 }
 
 export default function Experience() {
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start 60%', 'end 60%'],
@@ -71,8 +71,8 @@ export default function Experience() {
           <div className="timeline__line">
             <motion.div className="timeline__line-fill" style={{ scaleY }} />
           </div>
-          {experience.map((item, i) => (
-            <TimelineItem key={item.company} item={item} index={i} />
+          {experience.map((item) => (
+            <TimelineItem key={item.company} item={item} />
           ))}
         </div>
       </div>

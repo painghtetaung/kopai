@@ -2,26 +2,43 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { PerspectiveCamera } from '@react-three/drei'
 import * as THREE from 'three'
+import type { InputRef, HudSetter } from './types'
 
 const FIELD = 9 // half-size of the play field
 const ORB_COUNT = 8
 const PLAYER_SPEED = 8
 
-function randPos() {
+type Vec3 = [number, number, number]
+
+interface Orb {
+  pos: Vec3
+  taken: boolean
+}
+interface OrbState {
+  x: number
+  z: number
+  collected: number
+  time: number
+  best: number
+  done: boolean
+  hudAcc: number
+}
+
+function randPos(): Vec3 {
   return [(Math.random() * 2 - 1) * FIELD, 0.5, (Math.random() * 2 - 1) * FIELD]
 }
 
-export default function OrbCollector({ input, onHud }) {
-  const playerRef = useRef()
-  const camRef = useRef()
+export default function OrbCollector({ input, onHud }: { input: InputRef; onHud: HudSetter }) {
+  const playerRef = useRef<THREE.Group>(null)
+  const camRef = useRef<THREE.PerspectiveCamera>(null)
+  const orbRefs = useRef<(THREE.Mesh | null)[]>([])
 
-  const orbs = useMemo(
+  const orbs = useMemo<Orb[]>(
     () => Array.from({ length: ORB_COUNT }, () => ({ pos: randPos(), taken: false })),
     []
   )
-  const orbRefs = useRef([])
 
-  const state = useRef({
+  const state = useRef<OrbState>({
     x: 0,
     z: 0,
     collected: 0,
@@ -41,7 +58,7 @@ export default function OrbCollector({ input, onHud }) {
     // movement (up = away from camera = -z)
     const dx = (input.current.right ? 1 : 0) - (input.current.left ? 1 : 0)
     const dz = (input.current.down ? 1 : 0) - (input.current.up ? 1 : 0)
-    let len = Math.hypot(dx, dz) || 1
+    const len = Math.hypot(dx, dz) || 1
     s.x = THREE.MathUtils.clamp(s.x + (dx / len) * PLAYER_SPEED * dt, -FIELD, FIELD)
     s.z = THREE.MathUtils.clamp(s.z + (dz / len) * PLAYER_SPEED * dt, -FIELD, FIELD)
 
@@ -52,7 +69,6 @@ export default function OrbCollector({ input, onHud }) {
       p.position.y = 0.5 + Math.sin(performance.now() * 0.006) * 0.08
       p.rotation.y += dt * 2
     }
-    // camera follows from behind/above
     if (camRef.current) {
       camRef.current.position.x = THREE.MathUtils.lerp(camRef.current.position.x, s.x, 0.08)
       camRef.current.position.z = THREE.MathUtils.lerp(camRef.current.position.z, s.z + 11, 0.08)
@@ -116,18 +132,17 @@ export default function OrbCollector({ input, onHud }) {
       </mesh>
 
       {/* Grid overlay */}
-      <gridHelper
-        args={[FIELD * 2 + 2, 22, '#2a2a55', '#161636']}
-        position={[0, 0.01, 0]}
-      />
+      <gridHelper args={[FIELD * 2 + 2, 22, '#2a2a55', '#161636']} position={[0, 0.01, 0]} />
 
       {/* Boundary rails */}
-      {[
-        [0, -FIELD - 1, FIELD * 2 + 2, 0.12],
-        [0, FIELD + 1, FIELD * 2 + 2, 0.12],
-        [-FIELD - 1, 0, 0.12, FIELD * 2 + 2],
-        [FIELD + 1, 0, 0.12, FIELD * 2 + 2],
-      ].map(([x, z, w, d], i) => (
+      {(
+        [
+          [0, -FIELD - 1, FIELD * 2 + 2, 0.12],
+          [0, FIELD + 1, FIELD * 2 + 2, 0.12],
+          [-FIELD - 1, 0, 0.12, FIELD * 2 + 2],
+          [FIELD + 1, 0, 0.12, FIELD * 2 + 2],
+        ] as const
+      ).map(([x, z, w, d], i) => (
         <mesh key={i} position={[x, 0.2, z]}>
           <boxGeometry args={[w, 0.4, d]} />
           <meshStandardMaterial color="#7c6cff" emissive="#7c6cff" emissiveIntensity={1.6} toneMapped={false} />
@@ -136,14 +151,9 @@ export default function OrbCollector({ input, onHud }) {
 
       {/* Orbs */}
       {orbs.map((o, i) => (
-        <mesh key={i} ref={(el) => (orbRefs.current[i] = el)} position={o.pos}>
+        <mesh key={i} ref={(el) => { orbRefs.current[i] = el }} position={o.pos}>
           <icosahedronGeometry args={[0.42, 0]} />
-          <meshStandardMaterial
-            color="#3ddc97"
-            emissive="#3ddc97"
-            emissiveIntensity={2}
-            toneMapped={false}
-          />
+          <meshStandardMaterial color="#3ddc97" emissive="#3ddc97" emissiveIntensity={2} toneMapped={false} />
           <pointLight intensity={3} color="#3ddc97" distance={4} />
         </mesh>
       ))}

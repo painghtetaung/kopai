@@ -6,10 +6,10 @@ interaction are the point, not decoration.
 
 ## Stack
 
-- **React 18** + **Vite** (plain JS/JSX, no TypeScript)
+- **React 18** + **Vite** + **TypeScript** (strict mode; `.tsx`/`.ts`)
 - **Framer Motion** — all reveals, scroll-linked animation, magnetic & tilt interactions
 - **Lenis** — smooth inertia scrolling (`src/hooks/useLenis.js`)
-- **Canvas 2D** — interactive particle field in the hero (`src/components/AuroraCanvas.jsx`)
+- **Canvas 2D** — interactive particle field in the hero (`src/components/AuroraCanvas.tsx`)
 - No CSS framework — hand-written CSS with custom properties (design tokens) in `src/styles/`
 
 ## Commands
@@ -17,37 +17,40 @@ interaction are the point, not decoration.
 ```bash
 npm install       # install deps
 npm run dev       # dev server (http://localhost:5173)
-npm run build     # production build -> dist/
+npm run typecheck # tsc --noEmit (strict)
+npm run build     # tsc && vite build -> dist/
 npm run preview   # preview the production build
 ```
 
-There are no tests or linter configured. "Verify it works" = `npm run build` succeeds
-and the dev server renders without console errors.
+There are no unit tests. "Verify it works" = `npm run build` succeeds (which runs
+`tsc` first, so it also type-checks) and the dev server renders without console errors.
+TypeScript is **strict** with `noUnusedLocals`/`noUnusedParameters` — keep it clean.
 
 ## Where things live
 
 ```
 src/
-  data/resume.js        <- SINGLE SOURCE OF TRUTH for all content.
+  data/resume.ts        <- SINGLE SOURCE OF TRUTH for all content.
                            Edit profile, skills, experience, projects, education HERE.
                            Do not hardcode resume content inside components.
-  sections/             <- one file per page section, composed in App.jsx in order:
+  sections/             <- one file per page section, composed in App.tsx in order:
       Hero, About, Skills, Experience, Projects, Arcade, Contact
   games/                <- the 3D arcade (React Three Fiber). Lazy-loaded.
-      GameCanvas.jsx     hosts <Canvas>, switches the active game (the lazy chunk
+      GameCanvas.tsx     hosts <Canvas>, switches the active game (the lazy chunk
                          that pulls in three/fiber/drei — keeps it out of the main bundle)
-      Runner.jsx         Neon Runner: endless dodge, score by distance, localStorage 'runner-best'
-      OrbCollector.jsx   collect 8 orbs on a grid, timed, localStorage 'orbs-best'
-      Playground.jsx     physics toybox: custom gravity + floor/wall bounce + mouse-fling
-      useGameInput.js    shared directional input (keyboard + on-screen d-pad) -> one ref
+      Runner.tsx         Neon Runner: endless dodge, score by distance, localStorage 'runner-best'
+      OrbCollector.tsx   collect 8 orbs on a grid, timed, localStorage 'orbs-best'
+      Playground.tsx     physics toybox: custom gravity + floor/wall bounce + mouse-fling
+      useGameInput.ts    shared directional input (keyboard + on-screen d-pad) -> one ref
+      types.ts           shared game types (GameKey, GameInput, HudData, ...)
   components/            <- reusable UI + interaction primitives:
-      Cursor.jsx         magnetic custom cursor (dot + spring-lagged ring)
-      Magnetic.jsx       wraps children so they pull toward the pointer on hover
-      Reveal.jsx         fade/slide-in on scroll (whileInView, triggers once)
-      AnimatedText.jsx   splits a string into words and reveals them with a mask-up
-      Navbar.jsx         fixed nav + top scroll-progress bar
-      AuroraCanvas.jsx   the hero particle constellation
-  hooks/useLenis.js     smooth scroll + in-page anchor handling
+      Cursor.tsx         magnetic custom cursor (dot + spring-lagged ring)
+      Magnetic.tsx       wraps children so they pull toward the pointer on hover
+      Reveal.tsx         fade/slide-in on scroll (whileInView, triggers once)
+      AnimatedText.tsx   splits a string into words and reveals them with a mask-up
+      Navbar.tsx         fixed nav + top scroll-progress bar
+      AuroraCanvas.tsx   the hero particle constellation
+  hooks/useLenis.ts     smooth scroll + in-page anchor handling
   styles/
       index.css         global reset, design tokens (:root vars), fonts, base
       app.css           all section/component styling (large file, organized by section)
@@ -55,7 +58,7 @@ src/
 
 ## Conventions
 
-- **Content changes go in `src/data/resume.js`.** Components read from it.
+- **Content changes go in `src/data/resume.ts`.** Components read from it.
 - **Design tokens** are CSS custom properties in `src/styles/index.css` `:root`
   (`--accent`, `--bg`, `--text`, etc). Change the palette there, not per-component.
 - **Accent color** is `--accent` (#7c6cff purple); secondary accents `--accent-2` (blue),
@@ -70,22 +73,22 @@ src/
 
 ## Common tasks
 
-- **Add/edit a job:** edit the `experience` array in `src/data/resume.js`. The timeline
+- **Add/edit a job:** edit the `experience` array in `src/data/resume.ts`. The timeline
   renders automatically; `mode: 'Current'` gives the "Now" badge + highlighted card.
-- **Add a project:** add an object to `projects` in `resume.js` (give it an `accent` hex —
+- **Add a project:** add an object to `projects` in `resume.ts` (give it an `accent` hex —
   it colors the card's glare and bar).
 - **Change skills:** edit the `skills` array (grouped) and the `marquee` list in
-  `src/sections/Skills.jsx` if you want different words scrolling.
-- **Update links (GitHub/LinkedIn/email):** `profile.socials` and `profile.email` in `resume.js`.
-- **Add a new section:** create `src/sections/Foo.jsx`, style it in `app.css`, and add it to
-  `App.jsx`. Use `<Reveal>` for scroll-in and add an `id` if it needs a nav link (add the
-  link to the `links` array in `Navbar.jsx`).
+  `src/sections/Skills.tsx` if you want different words scrolling.
+- **Update links (GitHub/LinkedIn/email):** `profile.socials` and `profile.email` in `resume.ts`.
+- **Add a new section:** create `src/sections/Foo.tsx`, style it in `app.css`, and add it to
+  `App.tsx`. Use `<Reveal>` for scroll-in and add an `id` if it needs a nav link (add the
+  link to the `links` array in `Navbar.tsx`).
 
 ## The 3D arcade (`src/games/`)
 
 - Built with **React Three Fiber** (`@react-three/fiber` v8 + `@react-three/drei` v9 +
   `three` — pinned to React-18-compatible versions). Do not bump fiber to v9 (needs React 19).
-- **Lazy-loaded:** `Arcade.jsx` does `lazy(() => import('../games/GameCanvas'))`, so three.js
+- **Lazy-loaded:** `Arcade.tsx` does `lazy(() => import('../games/GameCanvas'))`, so three.js
   (~220 KB gzip) only downloads when a visitor starts a game. Keep it that way — never import
   from `games/` outside the lazy `GameCanvas` chunk.
 - **Per-frame logic uses refs, not state.** Games mutate positions inside `useFrame` and only

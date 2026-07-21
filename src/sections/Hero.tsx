@@ -6,7 +6,7 @@ import Magnetic from '../components/Magnetic'
 import { profile } from '../data/resume'
 
 export default function Hero() {
-  const ref = useRef(null)
+  const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],

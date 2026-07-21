@@ -1,11 +1,25 @@
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Reveal from '../components/Reveal'
 import useGameInput from '../games/useGameInput'
+import type { GameInput, GameKey, HudData } from '../games/types'
 
 const GameCanvas = lazy(() => import('../games/GameCanvas'))
 
-const GAMES = [
+type DPadType = 'lr' | 'full' | 'none'
+
+interface GameMeta {
+  key: GameKey
+  name: string
+  tag: string
+  accent: string
+  icon: string
+  desc: string
+  controls: string
+  dpad: DPadType
+}
+
+const GAMES: GameMeta[] = [
   {
     key: 'runner',
     name: 'Neon Runner',
@@ -38,7 +52,9 @@ const GAMES = [
   },
 ]
 
-function Hud({ game, hud }) {
+type PressFn = (dir: keyof GameInput, val: boolean) => void
+
+function Hud({ game, hud }: { game: GameKey; hud: HudData }) {
   if (game === 'runner') {
     return (
       <div className="arcade__hud">
@@ -63,12 +79,12 @@ function Hud({ game, hud }) {
   )
 }
 
-function DPad({ type, press }) {
+function DPad({ type, press }: { type: DPadType; press: PressFn }) {
   if (type === 'none') return null
-  const btn = (dir, label) => (
+  const btn = (dir: keyof GameInput, label: string) => (
     <button
       className="dpad__btn"
-      aria-label={label}
+      aria-label={dir}
       onPointerDown={(e) => { e.preventDefault(); press(dir, true) }}
       onPointerUp={() => press(dir, false)}
       onPointerLeave={() => press(dir, false)}
@@ -98,14 +114,14 @@ function DPad({ type, press }) {
 }
 
 export default function Arcade() {
-  const [active, setActive] = useState(null)
+  const [active, setActive] = useState<GameKey | null>(null)
   const [runId, setRunId] = useState(0)
-  const [hud, setHud] = useState({})
+  const [hud, setHud] = useState<HudData>({})
   const input = useGameInput(active)
 
   const meta = GAMES.find((g) => g.key === active)
 
-  const start = (key) => {
+  const start = (key: GameKey) => {
     setHud({ status: 'playing' })
     setActive(key)
     setRunId((n) => n + 1)
@@ -118,7 +134,7 @@ export default function Arcade() {
     setActive(null)
     setHud({})
   }
-  const press = (dir, val) => {
+  const press: PressFn = (dir, val) => {
     input.current[dir] = val
   }
 
@@ -151,7 +167,7 @@ export default function Arcade() {
                 className="game-card"
                 data-cursor="hover"
                 onClick={() => start(g.key)}
-                style={{ '--accent': g.accent }}
+                style={{ '--accent': g.accent } as CSSProperties}
               >
                 <span className="game-card__icon" style={{ color: g.accent }}>{g.icon}</span>
                 <span className="game-card__tag" style={{ color: g.accent }}>{g.tag}</span>
@@ -167,7 +183,7 @@ export default function Arcade() {
 
       {/* Play modal */}
       <AnimatePresence>
-        {active && (
+        {active && meta && (
           <motion.div
             className="arcade__modal"
             initial={{ opacity: 0 }}
@@ -177,7 +193,7 @@ export default function Arcade() {
           >
             <motion.div
               className="arcade__screen"
-              style={{ '--accent': meta.accent }}
+              style={{ '--accent': meta.accent } as CSSProperties}
               initial={{ scale: 0.94, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.94, y: 20 }}
