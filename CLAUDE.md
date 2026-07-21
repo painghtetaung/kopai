@@ -32,7 +32,14 @@ src/
                            Edit profile, skills, experience, projects, education HERE.
                            Do not hardcode resume content inside components.
   sections/             <- one file per page section, composed in App.jsx in order:
-      Hero, About, Skills, Experience, Projects, Contact
+      Hero, About, Skills, Experience, Projects, Arcade, Contact
+  games/                <- the 3D arcade (React Three Fiber). Lazy-loaded.
+      GameCanvas.jsx     hosts <Canvas>, switches the active game (the lazy chunk
+                         that pulls in three/fiber/drei — keeps it out of the main bundle)
+      Runner.jsx         Neon Runner: endless dodge, score by distance, localStorage 'runner-best'
+      OrbCollector.jsx   collect 8 orbs on a grid, timed, localStorage 'orbs-best'
+      Playground.jsx     physics toybox: custom gravity + floor/wall bounce + mouse-fling
+      useGameInput.js    shared directional input (keyboard + on-screen d-pad) -> one ref
   components/            <- reusable UI + interaction primitives:
       Cursor.jsx         magnetic custom cursor (dot + spring-lagged ring)
       Magnetic.jsx       wraps children so they pull toward the pointer on hover
@@ -73,6 +80,20 @@ src/
 - **Add a new section:** create `src/sections/Foo.jsx`, style it in `app.css`, and add it to
   `App.jsx`. Use `<Reveal>` for scroll-in and add an `id` if it needs a nav link (add the
   link to the `links` array in `Navbar.jsx`).
+
+## The 3D arcade (`src/games/`)
+
+- Built with **React Three Fiber** (`@react-three/fiber` v8 + `@react-three/drei` v9 +
+  `three` — pinned to React-18-compatible versions). Do not bump fiber to v9 (needs React 19).
+- **Lazy-loaded:** `Arcade.jsx` does `lazy(() => import('../games/GameCanvas'))`, so three.js
+  (~220 KB gzip) only downloads when a visitor starts a game. Keep it that way — never import
+  from `games/` outside the lazy `GameCanvas` chunk.
+- **Per-frame logic uses refs, not state.** Games mutate positions inside `useFrame` and only
+  push HUD numbers to React ~10×/sec (throttled) via the `onHud` callback. Don't call setState
+  every frame.
+- **Restart** = remount: `Arcade` bumps a `runId` used as the game's React `key`.
+- Each game sets its own `<PerspectiveCamera makeDefault>`, lights and colors — self-contained.
+- All geometry is procedural (no model/texture/font assets) so nothing needs fetching.
 
 ## Deployment
 

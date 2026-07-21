@@ -790,6 +790,277 @@
   background: rgba(124, 108, 255, 0.08);
 }
 
+/* ============================================================
+   Arcade
+   ============================================================ */
+.arcade__intro {
+  color: var(--text-dim);
+  font-size: 1.05rem;
+  max-width: 620px;
+  margin-top: 1.25rem;
+}
+.arcade__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+.game-card {
+  --accent: #7c6cff;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  padding: 1.8rem;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: linear-gradient(160deg, var(--surface), var(--bg-soft));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+  transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+.game-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(500px circle at 50% -20%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.game-card:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: 0 26px 60px -30px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.game-card:hover::before {
+  opacity: 1;
+}
+.game-card__icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.game-card__tag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.game-card__name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.game-card__desc {
+  color: var(--text-dim);
+  font-size: 0.96rem;
+  flex: 1;
+}
+.game-card__controls {
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  font-family: var(--font-display);
+  letter-spacing: 0.03em;
+}
+.game-card__play {
+  margin-top: 0.6rem;
+  font-weight: 600;
+  color: var(--accent);
+  transition: transform 0.3s ease;
+}
+.game-card:hover .game-card__play {
+  transform: translateX(6px);
+}
+@media (max-width: 860px) {
+  .arcade__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Play modal */
+.arcade__modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  background: rgba(4, 4, 8, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.arcade__screen {
+  --accent: #7c6cff;
+  width: min(1000px, 100%);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  border-radius: 20px;
+  overflow: hidden;
+  background: #05050b;
+  box-shadow: 0 40px 120px -40px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.arcade__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+  flex-wrap: wrap;
+}
+.arcade__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.arcade__hud {
+  display: flex;
+  gap: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+.arcade__hud b {
+  color: var(--text);
+  font-weight: 700;
+}
+.arcade__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.arcade__btn {
+  font-size: 0.82rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+.arcade__btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.arcade__btn--exit:hover {
+  border-color: #ff6b6b;
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+.arcade__viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 260px;
+  background: #05050b;
+}
+@media (max-width: 640px) {
+  .arcade__viewport {
+    aspect-ratio: 4 / 5;
+  }
+}
+.arcade__viewport canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.arcade__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-faint);
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+}
+.arcade__hint {
+  text-align: center;
+  padding: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  border-top: 1px solid var(--border);
+}
+.arcade__over {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  background: rgba(4, 4, 10, 0.72);
+  backdrop-filter: blur(4px);
+}
+.arcade__over h4 {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 700;
+}
+.arcade__over p {
+  color: var(--text-dim);
+}
+.arcade__over p b {
+  color: var(--text);
+}
+.arcade__over-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Touch d-pad */
+.dpad {
+  position: absolute;
+  bottom: 1rem;
+  display: none;
+  gap: 0.5rem;
+  z-index: 4;
+  user-select: none;
+  touch-action: none;
+}
+.dpad--lr {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.dpad--full {
+  right: 1rem;
+  flex-direction: column;
+  align-items: center;
+}
+.dpad__row {
+  display: flex;
+  gap: 0.5rem;
+}
+.dpad__btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: rgba(10, 10, 20, 0.6);
+  color: var(--text);
+  font-size: 1.1rem;
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(4px);
+}
+.dpad__btn:active {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+@media (hover: none) and (pointer: coarse) {
+  .dpad {
+    display: flex;
+  }
+}
+
 .footer {
   border-top: 1px solid var(--border);
   padding: 2rem 0;
