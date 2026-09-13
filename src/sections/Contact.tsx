@@ -1,79 +1,75 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
 import Reveal from '../components/Reveal'
-import Magnetic from '../components/Magnetic'
-import { profile, education } from '../data/resume'
+import { profile, studio } from '../data/resume'
 
 export default function Contact() {
+  const [copyState, setCopyState] = useState('Copy email')
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email)
+      setCopyState('Copied!')
+    } catch {
+      setCopyState('Please select the email to copy')
+    }
+  }
   return (
-    <section id="contact" className="section contact">
+    <section id="contact" className="contact">
       <div className="container">
-        {/* Education */}
-        <div className="education">
-          <Reveal>
-            <p className="eyebrow">Education</p>
-          </Reveal>
-          <div className="education__list">
-            {education.map((e, i) => (
-              <Reveal className="education__item" key={e.school} delay={0.05 + i * 0.08}>
-                <div>
-                  <h3>{e.school}</h3>
-                  <p>{e.detail}</p>
-                </div>
-                <span className="education__period">{e.period}</span>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div className="contact__cta">
-          <Reveal>
-            <p className="eyebrow" style={{ justifyContent: 'center' }}>
-              Contact
+        <Reveal>
+          <div className="contact__top">
+            <p className="eyebrow">04 / SAY HELLO</p>
+            <p>
+              Have a good idea?
+              <br />
+              I’d love to hear it.
             </p>
-          </Reveal>
-          <Reveal delay={0.05}>
-            <h2 className="contact__headline">
-              Let’s build something <span className="grad-text">worth interacting with.</span>
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <Magnetic strength={0.25}>
-              <a href={`mailto:${profile.email}`} className="contact__email" data-cursor="hover">
-                {profile.email}
-              </a>
-            </Magnetic>
-          </Reveal>
-
-          <Reveal delay={0.15}>
-            <div className="contact__socials">
-              {profile.socials.map((s) => (
-                <Magnetic key={s.label}>
-                  <a
-                    className="contact__social"
-                    href={s.href}
-                    target={s.href.startsWith('http') ? '_blank' : undefined}
-                    rel="noreferrer"
-                    data-cursor="hover"
-                  >
-                    {s.label}
-                  </a>
-                </Magnetic>
+          </div>
+          <a className="contact__headline" href={'mailto:' + profile.email}>
+            Let’s make
+            <br />
+            <em>something matter.</em>
+            <span aria-hidden="true">↗</span>
+          </a>
+          <div className="contact__links">
+            <a className="contact__email" href={'mailto:' + profile.email}>
+              {profile.email}
+            </a>
+            <button
+              className="copy-email mono"
+              onClick={copy}
+              aria-live="polite"
+            >
+              {copyState} <span aria-hidden="true">⧉</span>
+            </button>
+          </div>
+        </Reveal>
+        <footer className="footer">
+          <a href="#top" className="wordmark">
+            {studio.shortName.toLowerCase()}
+            <span className="asterisk" aria-hidden="true">
+              ✳
+            </span>
+          </a>
+          <span className="mono">
+            © {new Date().getFullYear()} {profile.name}. Made with care.
+          </span>
+          <div>
+            {profile.socials
+              .filter((social) => social.href.startsWith('https://'))
+              .map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {social.label} ↗
+                </a>
               ))}
-            </div>
-          </Reveal>
-        </div>
+            <a href="#top">Back to top ↑</a>
+          </div>
+        </footer>
       </div>
-
-      <footer className="footer">
-        <div className="container footer__inner">
-          <span>© {new Date().getFullYear()} {profile.name}</span>
-          <span className="footer__built">Built with React & Framer Motion</span>
-          <motion.a href="#top" className="footer__top" data-cursor="hover" whileHover={{ y: -4 }}>
-            Back to top ↑
-          </motion.a>
-        </div>
-      </footer>
     </section>
   )
 }

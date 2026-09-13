@@ -1,52 +1,34 @@
 import Reveal from '../components/Reveal'
-import { profile } from '../data/resume'
-
-const highlights = [
-  'Clean architecture & reusable components',
-  'Motion design & micro-interactions',
-  'Performance & accessibility',
-  'Design-to-code fidelity',
-]
+import { profile, studio } from '../data/resume'
 
 export default function About() {
   return (
-    <section id="about" className="section about">
-      <div className="container">
+    <section id="about" className="about section">
+      <div className="container about__grid">
         <Reveal>
-          <p className="eyebrow">About</p>
+          <p className="eyebrow">02 / THE PERSON BEHIND THE PIXELS</p>
+          <div className="about__signature" aria-hidden="true">
+            p<span>✳</span>
+          </div>
+          <p className="mono about__caption">
+            {profile.name}
+            <br />
+            {profile.location}
+          </p>
         </Reveal>
-
-        <div className="about__grid">
-          <div className="about__lead">
-            <Reveal delay={0.05}>
-              <h2 className="about__headline">
-                I turn interfaces into experiences that feel{' '}
-                <span className="grad-text">fast, fluid and alive.</span>
-              </h2>
-            </Reveal>
+        <Reveal delay={0.1}>
+          <h2>{studio.about}</h2>
+          <p className="about__summary">{profile.summary}</p>
+          <p className="about__note">{studio.note}</p>
+          <div className="about__principles">
+            {studio.principles.map((principle, index) => (
+              <span key={principle}>
+                <i className="mono">0{index + 1}</i>
+                {principle}
+              </span>
+            ))}
           </div>
-
-          <div className="about__body">
-            <Reveal delay={0.1}>
-              <p>{profile.summary}</p>
-            </Reveal>
-            <Reveal delay={0.18}>
-              <p>
-                Across fintech, edtech and AI startups I’ve shipped dashboards, payment flows,
-                real-time video and gamified learning tools — always with an eye on the details that
-                make an interface feel considered.
-              </p>
-            </Reveal>
-
-            <ul className="about__highlights">
-              {highlights.map((h, i) => (
-                <Reveal as="li" key={h} delay={0.24 + i * 0.06}>
-                  <span className="tick">→</span> {h}
-                </Reveal>
-              ))}
-            </ul>
-          </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   )

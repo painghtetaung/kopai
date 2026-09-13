@@ -1,5 +1,4 @@
-import useLenis from './hooks/useLenis'
-import Cursor from './components/Cursor'
+import { MotionConfig } from 'framer-motion'
 import Navbar from './components/Navbar'
 import Hero from './sections/Hero'
 import About from './sections/About'
@@ -8,25 +7,27 @@ import Experience from './sections/Experience'
 import Projects from './sections/Projects'
 import Arcade from './sections/Arcade'
 import Contact from './sections/Contact'
-import './components/Cursor.css'
 import './styles/app.css'
 
 export default function App() {
-  useLenis()
-
   return (
-    <>
-      <Cursor />
+    <MotionConfig
+      reducedMotion="user"
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <Navbar />
-      <main>
+      <main id="main">
         <Hero />
-        <About />
-        <Skills />
-        <Experience />
         <Projects />
+        <About />
+        <Experience />
+        <Skills />
         <Arcade />
         <Contact />
       </main>
-    </>
+    </MotionConfig>
   )
 }

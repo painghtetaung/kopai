@@ -38,6 +38,8 @@ export interface Project {
   tag: string
   description: string
   accent: string
+  company: string
+  category: string
 }
 
 export interface Education {
@@ -60,18 +62,33 @@ export const profile: Profile = {
   socials: [
     { label: 'Email', href: 'mailto:painghtetaung1999@gmail.com' },
     { label: 'GitHub', href: 'https://github.com/painghtetaung' },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/' },
   ],
 }
 
 export const skills: SkillGroup[] = [
   {
     group: 'Front-End',
-    items: ['JavaScript', 'TypeScript', 'React', 'Redux', 'Next.js', 'Vue.js', 'jQuery', 'HTML5', 'CSS3'],
+    items: [
+      'JavaScript',
+      'TypeScript',
+      'React',
+      'Redux',
+      'Next.js',
+      'Vue.js',
+      'jQuery',
+      'HTML5',
+      'CSS3',
+    ],
   },
   {
     group: 'UI Libraries',
-    items: ['Tailwind CSS', 'Bootstrap', 'Material UI', 'shadcn/ui', 'Ant Design'],
+    items: [
+      'Tailwind CSS',
+      'Bootstrap',
+      'Material UI',
+      'shadcn/ui',
+      'Ant Design',
+    ],
   },
   {
     group: 'Animation',
@@ -116,7 +133,8 @@ export const experience: Job[] = [
     role: 'Senior Frontend Developer',
     period: 'Jan 2023 — Sept 2024',
     mode: 'Hybrid',
-    summary: 'A leading payment gateway providing wallet systems for local banks.',
+    summary:
+      'A leading payment gateway providing wallet systems for local banks.',
     points: [
       'Enabled businesses to accept digital payments, optimising apps for speed and secure transactions at 600+ transactions per day.',
       'Enhanced security measures to protect sensitive user data and maintain transaction integrity.',
@@ -143,7 +161,8 @@ export const experience: Job[] = [
     role: 'Frontend Developer',
     period: 'Oct 2021 — Apr 2023',
     mode: 'Hybrid',
-    summary: 'EdTech building programming and STEM learning for youths in Myanmar.',
+    summary:
+      'EdTech building programming and STEM learning for youths in Myanmar.',
     points: [
       'Built a visual programming platform teaching kids and teenagers to code — React, Redux and Tailwind CSS with Google Blockly and P5.js for gamified, interactive elements.',
       'Improved the learning platform’s usability and performance for a more engaging experience.',
@@ -155,6 +174,8 @@ export const experience: Job[] = [
 export const projects: Project[] = [
   {
     title: 'Rezerv Booking Platform',
+    company: 'Rezerv',
+    category: 'Booking & wellness',
     tag: 'React · TypeScript',
     description:
       'Booking flows and business dashboards for fitness & wellness studios, with a shared component system.',
@@ -162,6 +183,8 @@ export const projects: Project[] = [
   },
   {
     title: 'E-Wallet Admin Dashboard',
+    company: 'Dinger',
+    category: 'Finance & payments',
     tag: 'Next.js · Fintech',
     description:
       'Admin dashboard for a bank wallet system — user management, transaction monitoring, analytics and reporting.',
@@ -169,6 +192,8 @@ export const projects: Project[] = [
   },
   {
     title: 'Visual Programming Platform',
+    company: 'Thate Pan Hub',
+    category: 'Learning & play',
     tag: 'React · Blockly · P5.js',
     description:
       'Gamified visual programming environment that teaches kids and teens to code through interactive blocks.',
@@ -176,6 +201,8 @@ export const projects: Project[] = [
   },
   {
     title: 'Real-time Video Calling',
+    company: 'Nuos Magicko',
+    category: 'Real-time communication',
     tag: 'React · MediaSoup',
     description:
       'Low-latency video call features integrated with backend services for seamless real-time communication.',
@@ -186,12 +213,29 @@ export const projects: Project[] = [
 export const education: Education[] = [
   {
     school: 'Yangon University of Distance Education',
-    detail: 'Final Year — Business Management (Management Accounting, International Finance)',
+    detail:
+      'Final Year — Business Management (Management Accounting, International Finance)',
     period: 'Dec 2016 — Apr 2019',
   },
   {
     school: 'KMD Institute',
-    detail: 'Diploma in Web Development (Database Management Systems, Web Development Technology)',
+    detail:
+      'Diploma in Web Development (Database Management Systems, Web Development Technology)',
     period: 'Apr 2016 — Apr 2017',
   },
 ]
+
+export const studio = {
+  shortName: 'Paing',
+  intro:
+    'I turn complex ideas into simple, expressive web experiences. A frontend developer with a soft spot for the little details.',
+  about:
+    'Good interfaces should make life a little easier. And, when there’s room, a little more delightful.',
+  note: 'I care about the way a button responds, how a page settles into place, and all the small things you feel before you notice.',
+  principles: [
+    'Make it useful.',
+    'Keep it thoughtful.',
+    'Leave room for play.',
+  ],
+  toolkit: ['React', 'Next.js', 'TypeScript', 'Vue.js', 'Framer Motion'],
+}

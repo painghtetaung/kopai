@@ -1,5 +1,19 @@
 # CLAUDE.md
 
+## Current design (September 2026)
+
+The portfolio has been redesigned with a warm paper background, blue ink accents,
+Inter Tight / Instrument Serif / DM Mono typography, native scrolling and cursors,
+and an interactive SVG sculpture. The current section order is Hero, Projects,
+About, Experience, Skills, Arcade, Contact. Project details and the arcade use
+native dialogs; experience, education, and toolkit use native details elements.
+The old cursor, particle field, and Lenis helpers are retained but not mounted.
+The older visual descriptions below describe the previous design. For current
+design tokens and layout, consult src/styles/index.css and src/styles/app.css.
+Content still belongs in src/data/resume.ts, including the studio introduction.
+Project artwork is explicitly an interface study, not a production screenshot.
+Keep the game engine lazy-loaded and respect reduced-motion preferences.
+
 Project context for Claude Code. This is a personal portfolio site for Paing Htet Aung,
 a Frontend Developer. The site is itself a showcase of frontend craft — animation and
 interaction are the point, not decoration.

@@ -1,105 +1,89 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
-import AuroraCanvas from '../components/AuroraCanvas'
-import AnimatedText from '../components/AnimatedText'
+import { motion, useReducedMotion } from 'framer-motion'
+import Shape from '../components/Shape'
 import Magnetic from '../components/Magnetic'
-import { profile } from '../data/resume'
+import { experience, profile, studio } from '../data/resume'
 
 export default function Hero() {
-  const ref = useRef<HTMLElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start start', 'end start'],
-  })
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
-
+  const reduce = useReducedMotion()
+  const current = experience.find((job) => job.mode === 'Current')
   return (
-    <section id="top" className="hero" ref={ref}>
-      <div className="hero__bg">
-        <AuroraCanvas />
-        <div className="hero__glow hero__glow--1" />
-        <div className="hero__glow hero__glow--2" />
-      </div>
-
-      <motion.div className="container hero__content" style={{ y, opacity }}>
-        <motion.p
-          className="hero__available"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-        >
-          <span className="dot" /> Currently at Rezerv · Open to collaborate
-        </motion.p>
-
-        <h1 className="hero__title">
-          <AnimatedText text="Paing Htet Aung" delay={0.35} />
-        </h1>
-
-        <div className="hero__role">
-          <AnimatedText text="Frontend Developer" delay={0.75} stagger={0.05} />
-        </div>
-
-        <motion.p
-          className="hero__tagline"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.7 }}
-        >
-          {profile.tagline}
-        </motion.p>
-
-        <motion.div
-          className="hero__actions"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3, duration: 0.7 }}
-        >
-          <Magnetic>
-            <a href="#work" className="btn btn--primary" data-cursor="hover">
-              View my work
-            </a>
-          </Magnetic>
-          <Magnetic>
-            <a href="#contact" className="btn btn--ghost" data-cursor="hover">
-              Get in touch
-            </a>
-          </Magnetic>
-        </motion.div>
-
-        <motion.div
-          className="hero__stats"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.7 }}
-        >
-          <div className="hero__stat">
-            <strong>{profile.yearsExperience}</strong>
-            <span>Years experience</span>
-          </div>
-          <div className="hero__stat">
-            <strong>5</strong>
-            <span>Companies shipped for</span>
-          </div>
-          <div className="hero__stat">
-            <strong>∞</strong>
-            <span>Components crafted</span>
-          </div>
-        </motion.div>
-      </motion.div>
-
-      <motion.a
-        href="#about"
-        className="hero__scroll"
-        aria-label="Scroll to content"
-        data-cursor="hover"
-        initial={{ opacity: 0 }}
+    <section id="top" className="hero container">
+      <motion.div
+        className="hero__eyebrow mono"
+        initial={reduce ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 0.8 }}
+        transition={{ duration: 0.5, delay: reduce ? 0 : 0.1 }}
       >
-        <span className="hero__scroll-line" />
-        Scroll
-      </motion.a>
+        <span className="status-dot" /> {profile.role}{' '}
+        <span className="hero__slash">/</span> A thoughtful corner of the
+        internet
+      </motion.div>
+      <div className="hero__main">
+        <div className="hero__copy">
+          <h1 aria-label="A little code. A lot of feeling.">
+            <span className="hero__line" aria-hidden="true">
+              <motion.span
+                initial={reduce ? false : { y: '110%' }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.85, delay: reduce ? 0 : 0.12 }}
+              >
+                A little code.
+              </motion.span>
+            </span>
+            <span className="hero__line" aria-hidden="true">
+              <motion.span
+                initial={reduce ? false : { y: '110%' }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.95, delay: reduce ? 0 : 0.26 }}
+              >
+                A lot of <em>feeling.</em>
+              </motion.span>
+            </span>
+          </h1>
+          <motion.div
+            className="hero__intro"
+            initial={reduce ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: reduce ? 0 : 0.45 }}
+          >
+            <span className="hero__hello">
+              Hey, I’m {studio.shortName}. <span aria-hidden="true">↗</span>
+            </span>
+            <p>{studio.intro}</p>
+          </motion.div>
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: reduce ? 0 : 0.55 }}
+          >
+            <Magnetic>
+              <a className="pill-link" href="#projects">
+                Explore my work <span aria-hidden="true">↘</span>
+              </a>
+            </Magnetic>
+          </motion.div>
+        </div>
+        <Shape />
+      </div>
+      <motion.div
+        className="hero__footer mono"
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.7, delay: reduce ? 0 : 0.7 }}
+      >
+        <span>{profile.yearsExperience} YEARS OF MAKING THINGS FEEL RIGHT</span>
+        {current && (
+          <span className="hero__current">
+            <span className="status-dot" /> CURRENTLY BUILDING AT{' '}
+            <a href={current.url} target="_blank" rel="noreferrer">
+              {current.company.toUpperCase()} ↗
+            </a>
+          </span>
+        )}
+        <a href="#projects" className="hero__scroll">
+          SCROLL A LITTLE <span aria-hidden="true">↓</span>
+        </a>
+      </motion.div>
     </section>
   )
 }
